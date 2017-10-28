@@ -1,0 +1,34 @@
+# //  Questa Sim-64
+# //  Version 10.3b linux_x86_64 May 29 2014
+# //
+# //  Copyright 1991-2014 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  THIS WORK CONTAINS TRADE SECRET AND PROPRIETARY INFORMATION
+# //  WHICH IS THE PROPERTY OF MENTOR GRAPHICS CORPORATION OR ITS
+# //  LICENSORS AND IS SUBJECT TO LICENSE TERMS.
+# //
+# vsim -do "view objects; add wave *; run -all;" -onfinish stop -L altera_mf_ver -L altera_ver -L cycloneive_ver -wlf apb_slave_tb.wlf work.apb_slave_tb 
+# Start time: 23:04:06 on Oct 27,2017
+# ** Warning: (vsim-8891) All optimizations are turned off because the -novopt switch is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features please see the User's Manual section on Preserving Object Visibility with vopt.
+# Loading sv_std.std
+# Loading work.definesPkg
+# Loading work.apb_slave_tb_sv_unit
+# Loading work.apb_slave_tb
+# Loading work.apb_if
+# Loading work.apb_slave_sv_unit
+# Loading work.apb_slave
+# ** Warning: (vsim-3839) include/apbTasks.vh(13): Variable '/apb_slave_tb/apbBus/PRDATA', driven via a port connection, is multiply driven. See testbench/apb_slave_tb.sv(18).
+#         Region: /apb_slave_tb/apbBus
+# view objects
+# .main_pane.objects.interior.cs.body.tree
+#  add wave *
+#  run -all
+# ** Warning: (vsim-8296) SVA $error messages are being ignored.
+#         Region: /apb_slave_tb
+# 
+# Write then read test failed
+# Break in Module apb_slave_tb at testbench/apb_slave_tb.sv line 75
+# 
+# End time: 23:48:11 on Oct 27,2017, Elapsed time: 0:44:05
+# Errors: 0, Warnings: 2
