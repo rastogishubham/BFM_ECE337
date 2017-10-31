@@ -10,7 +10,7 @@ module apb_slave_tb;
 	logic pclk;
 	logic [7:0] addr;
 	logic [31:0] data, rData;
-	logic [31:0] idleCycles;
+	//logic [31:0] idleCycles;
 	logic rstN;
 
 	apb_if apbBus(.apbClk(pclk), .rst(rstN));
@@ -35,17 +35,13 @@ module apb_slave_tb;
 	initial
 	begin
 		rstN = 1'b1;
-		repeat (5) @(posedge pclk);
+		@(posedge pclk);
 		rstN = 1'b0;
-		repeat (5) @(posedge pclk);
+		@(posedge pclk);
 		rstN = 1'b1;
-	end
-
-	initial 	
-	begin
 		//initialize the APB bus for transactions
-		apbBus.initialize();
-		//apbBus.idleTicks(100);
+		apbBus.tb.initialize();
+		//apbBus.idleTicks(8);
 
 		addr = 'h32;
 		data = 'h10;
@@ -56,20 +52,20 @@ module apb_slave_tb;
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 1  passed");
     	assert(data != rData) $display("\nWrite then read test 1 failed");		
-		apbBus.writeData(addr + 4, data + 4);
 		data = 'h14;
+		apbBus.writeData(addr + 4, data);
 		repeat(2) @(posedge pclk);
 		apbBus.readData(addr + 4, rData);
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 2 passed");
     	assert(data != rData) $display("\nWrite then read test 2 failed");
-		apbBus.writeData(addr + 8, data + 8);
 		data = 'h18;
+		apbBus.writeData(addr + 8, data);
 		repeat(2) @(posedge pclk);
 		apbBus.readData(addr + 8, rData);
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 3 passed");
-    assert(data != rData) $display("\nWrite then read test 3 failed");
-    $finish;
+    	assert(data != rData) $display("\nWrite then read test 3 failed");
+    	$finish;
 	end
 endmodule
