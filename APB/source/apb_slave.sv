@@ -23,16 +23,16 @@ module apb_slave
 
 logic [dataWidth-1:0] mem [256];
 
-logic [1:0] apb_st;
-const logic [1:0] SETUP = 0;
-const logic [1:0] W_ENABLE = 1;
-const logic [1:0] R_ENABLE = 2;
+typedef enum logic [1:0] {SETUP, W_ENABLE, R_ENABLE}
+state_type;
+state_type  apb_st;
 
 // SETUP -> ENABLE
-always @(negedge rst_n or posedge clk) begin
-  if (rst_n == 0) begin
-    apb_st <= 0;
+always_ff @(posedge clk, negedge rst_n) begin
+  if (~rst_n) begin
+    apb_st <= SETUP;
     apb_slave.PRDATA <= 0;
+    mem <= '{default: '0};
   end
 
   else begin
