@@ -32,18 +32,18 @@ const logic [1:0] R_ENABLE = 2;
 always @(negedge rst_n or posedge clk) begin
   if (rst_n == 0) begin
     apb_st <= 0;
-    apb_slave.apbSlave.PRDATA <= 0;
+    apb_slave.PRDATA <= 0;
   end
 
   else begin
     case (apb_st)
       SETUP : begin
         // clear the apb_slave.PRDATA
-        apb_slave.apbSlave.PRDATA <= 0;
+        apb_slave.PRDATA <= 0;
 
         // Move to ENABLE when the psel is asserted
-        if (apb_slave.apbSlave.PSEL && !apb_slave.apbSlave.PENABLE) begin
-          if (apb_slave.apbSlave.PWRITE) begin
+        if (apb_slave.PSEL && !apb_slave.PENABLE) begin
+          if (apb_slave.PWRITE) begin
             apb_st <= W_ENABLE;
           end
 
@@ -55,8 +55,8 @@ always @(negedge rst_n or posedge clk) begin
 
       W_ENABLE : begin
         // write pwdata to memory
-        if (apb_slave.apbSlave.PSEL && apb_slave.apbSlave.PENABLE && apb_slave.apbSlave.PWRITE) begin
-          mem[apb_slave.apbSlave.PADDR] <= apb_slave.apbSlave.PWDATA;
+        if (apb_slave.PSEL && apb_slave.PENABLE && apb_slave.PWRITE) begin
+          mem[apb_slave.PADDR] <= apb_slave.PWDATA;
         end
 
         // return to SETUP
@@ -65,8 +65,8 @@ always @(negedge rst_n or posedge clk) begin
 
       R_ENABLE : begin
         // read apb_slave.PRDATA from memory
-        if (apb_slave.apbSlave.PSEL && apb_slave.apbSlave.PENABLE && !apb_slave.apbSlave.PWRITE) begin
-          apb_slave.apbSlave.PRDATA <= mem[apb_slave.apbSlave.PADDR];
+        if (apb_slave.PSEL && apb_slave.PENABLE && !apb_slave.PWRITE) begin
+          apb_slave.PRDATA <= mem[apb_slave.PADDR];
         end
 
         // return to SETUP
