@@ -9,7 +9,7 @@ module apb_slave
 )
 (
   input logic clk,
-  input logic rst_n,
+  input logic rst_n ,
   apb_if.slave apb_slave
   /*input                        clk,
   input                        rst_n,
@@ -74,5 +74,5 @@ always @(negedge rst_n or posedge clk) begin
       end
     endcase
   end
-end 
+end
 endmodule
