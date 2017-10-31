@@ -16,7 +16,7 @@ interface apb_if(apbClk, rst);
 	logic PWRITE; //determines read or write transaction
 	logic PREADY;
 
-	default clocking apbtrans @(posedge apbClk);
+	/*default clocking apbtrans @(posedge apbClk);
 		output PENABLE, PWRITE, PSEL, PADDR, PWDATA;
 		input PREADY, PRDATA;
 	endclocking
@@ -24,49 +24,54 @@ interface apb_if(apbClk, rst);
 	clocking apbSlave @(posedge apbClk);
 		input PENABLE, PWRITE, PSEL, PADDR, PWDATA;
 		output PRDATA;
-	endclocking
+	endclocking*/
 
 	modport tb	(
-				clocking apbtrans, 
-				import task writeData(), 
-				import task readData(), 
-				import task idleTicks(),
-				import task initializeSignals(), 
-				import task clearSignals(), 
-				import task resetSignals(), 
-				import task initialize()
+				//clocking apbtrans, 
+		import task writeData(), 
+		import task readData(), 
+		import task idleTicks(),
+		import task initializeSignals(), 
+		import task clearSignals(), 
+		import task resetSignals(), 
+		import task initialize(),
+		output PENABLE, PWRITE, PSEL, PADDR, PWDATA,
+		input PRDATA
 			);
-	modport slave(clocking apbSlave);
+	modport slave(
+		input PENABLE, PWRITE, PSEL, PADDR, PWDATA,
+		output PRDATA
+		);
+	//clocking apbSlave);
 
 //class apb_bfm_inst extends apb_bfm;
 
 	task writeData(int unsigned addr, int unsigned data);
-		apbtrans.PSEL <= 1'b1;
-		apbtrans.PWRITE <= 1'b1;
-		apbtrans.PENABLE <= 1'b0;
-		apbtrans.PADDR <= addr;
-		apbtrans.PWDATA <= data;
+		PSEL <= 1'b1;
+		PWRITE <= 1'b1;
+		PENABLE <= 1'b0;
+		PADDR <= addr;
+		PWDATA <= data;
 		@(posedge apbClk);
-		apbtrans.PENABLE <= 1'b1;
+		PENABLE <= 1'b1;
 		@(posedge apbClk);
-		apbtrans.PSEL <= 1'b0;
-		apbtrans.PENABLE <= 1'b0;
+		PSEL <= 1'b0;
+		PENABLE <= 1'b0;
 	endtask: writeData
 
 	task readData(int unsigned addr, output int unsigned data);
-		apbtrans.PSEL <= 1'b1;
-		apbtrans.PWRITE <= 1'b0;
-		apbtrans.PENABLE <= 1'b0;
-		apbtrans.PADDR <= addr;
+		PSEL <= 1'b1;
+		PWRITE <= 1'b0;
+		PENABLE <= 1'b0;
+		PADDR <= addr;
 		@(posedge apbClk);
-		apbtrans.PENABLE <= 1'b1;
+		PENABLE <= 1'b1;
 		@(posedge apbClk);
 		@(posedge apbClk);
-		
+		data <= PRDATA;
 		@(posedge apbClk);
-		data <= apbtrans.PRDATA;
-		apbtrans.PSEL <= 1'b0;
-		apbtrans.PENABLE <= 1'b0;
+		PSEL <= 1'b0;
+		PENABLE <= 1'b0;
 	endtask: readData
 
   	task idleTicks (input int tick);
@@ -74,18 +79,18 @@ interface apb_if(apbClk, rst);
   	endtask
 
 	task initializeSignals();
-		apbtrans.PSEL <= 1'b1;
-		apbtrans.PWRITE <= 1'b0;
-		apbtrans.PENABLE <= 1'b0;
+		PSEL <= 1'b1;
+		PWRITE <= 1'b0;
+		PENABLE <= 1'b0;
 	endtask: initializeSignals
 
 	task clearSignals ();
-		apbtrans.PADDR   <= '0;
-    		apbtrans.PSEL    <= '0;
-    		apbtrans.PENABLE <= '0;
-    		apbtrans.PWRITE  <= '0;
-    		apbtrans.PWDATA  <= '0;
-    		@(posedge apbClk);
+		PADDR   <= '0;
+		PSEL    <= '0;
+		PENABLE <= '0;
+		PWRITE  <= '0;
+		PWDATA  <= '0;
+		@(posedge apbClk);
   	endtask
 
   	task resetSignals ();
