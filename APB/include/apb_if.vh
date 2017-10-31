@@ -14,7 +14,6 @@ interface apb_if(apbClk, rst);
 	logic PSEL;
 	logic PENABLE;
 	logic PWRITE; //determines read or write transaction
-	logic PREADY;
 
 	/*default clocking apbtrans @(posedge apbClk);
 		output PENABLE, PWRITE, PSEL, PADDR, PWDATA;
