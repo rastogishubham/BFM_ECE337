@@ -15,7 +15,7 @@ module apb_slave_tb;
 
 	apb_if apbBus(.apbClk(pclk), .rst(rstN));
 
-	apb_slave   DUT(pclk, rstN, apbBus);
+	apb_slave DUT(pclk, rstN, apbBus);
 
 	//typedef virtual apb_if #(32, 32).tb apbTb;
 	//apbTb apbMaster;
@@ -45,7 +45,7 @@ module apb_slave_tb;
 	begin
 		//initialize the APB bus for transactions
 		apbBus.initialize();
-		apbBus.idleTicks(100);
+		//apbBus.idleTicks(100);
 
 		addr = 'h32;
 		data = 'h10;
@@ -55,14 +55,16 @@ module apb_slave_tb;
 		apbBus.readData(addr, rData);
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 1  passed");
-    assert(data != rData) $display("\nWrite then read test 1 failed");		
+    	assert(data != rData) $display("\nWrite then read test 1 failed");		
 		apbBus.writeData(addr + 4, data + 4);
+		data = 'h14;
 		repeat(2) @(posedge pclk);
 		apbBus.readData(addr + 4, rData);
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 2 passed");
-    assert(data != rData) $display("\nWrite then read test 2 failed");
+    	assert(data != rData) $display("\nWrite then read test 2 failed");
 		apbBus.writeData(addr + 8, data + 8);
+		data = 'h18;
 		repeat(2) @(posedge pclk);
 		apbBus.readData(addr + 8, rData);
 		repeat(2) @(posedge pclk);
