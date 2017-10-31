@@ -41,7 +41,6 @@ interface apb_if(apbClk, rst);
 		input PENABLE, PWRITE, PSEL, PADDR, PWDATA,
 		output PRDATA
 		);
-	//clocking apbSlave);
 
 //class apb_bfm_inst extends apb_bfm;
 
