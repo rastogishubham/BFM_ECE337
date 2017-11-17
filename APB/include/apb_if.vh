@@ -4,10 +4,8 @@
 `include "definesPkg.vh"			// including Package definition
 import definesPkg::*;				// Wildcard Import
 
-interface apb_if(apbClk, rst);
+interface apb_if(input logic apbClk, input logic rst);
 
-	input logic apbClk;
-	input logic rst;
 	logic [APB_ADDR_WIDTH - 1: 0] PADDR;
 	logic [APB_DATA_WIDTH - 1: 0] PWDATA;
 	logic [APB_DATA_WIDTH - 1: 0] PRDATA;
