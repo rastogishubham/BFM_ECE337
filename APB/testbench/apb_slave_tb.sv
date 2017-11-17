@@ -1,28 +1,38 @@
-`include "apb_if.vh"
 `include "definesPkg.vh"
-import definesPkg::* ;				// Wildcard Import
-
+`include "apb_tasks_pkg.vh"
 `timescale 1ns / 10ps
 
+import definesPkg::*;
+import apb_tasks_pkg::*;
 
 module apb_slave_tb;
 
 	logic pclk;
 	logic [7:0] addr;
 	logic [31:0] data, rData;
-	//logic [31:0] idleCycles;
 	logic rstN;
 
-	apb_if apbBus(.apbClk(pclk), .rst(rstN));
+	//apb_if apbBus(.apbClk(pclk), .rst(rstN));
 
-	apb_slave DUT(pclk, rstN, apbBus);
+  	logic        [APB_ADDR_WIDTH-1:0] PADDR;
+  	logic                        PRWRITE;
+  	logic                        PSEL;
+  	logic                        PENABLE;
+  	logic        [APB_DATA_WIDTH-1:0] PWDATA;
+  	logic [APB_DATA_WIDTH-1:0] PRDATA;
 
-	//typedef virtual apb_if #(32, 32).tb apbTb;
-	//apbTb apbMaster;
-	//apbMaster = apbTb(apb_t);
-	//apbMaster = apb_t;
-	//typedef virtual amba3_apb_if #(32, 32).apbtrans apbMaster;
-	//apbMaster = apb_if_inst;
+	apb_slave DUT
+	(
+		.clk(pclk),
+		.rst_n(rstN),
+		.PADDR(PADDR),
+		.PWRITE(PWRITE),
+		.PSEL(PSEL),
+		.PENABLE(PENABLE),
+		.PWDATA(PWDATA),
+		.PRDATA(PRDATA)
+	);
+
 
 	//generate clock
 	initial
@@ -40,29 +50,29 @@ module apb_slave_tb;
 		@(posedge pclk);
 		rstN = 1'b1;
 		//initialize the APB bus for transactions
-		apbBus.tb.initialize();
-		//apbBus.idleTicks(8);
+		initialize(pclk);
+		//idleTicks(8);
 
 		addr = 'h32;
 		data = 'h10;
 		//call tasks to write first and then read from the DUT
-		apbBus.writeData(addr, data);
+		writeData(pclk, addr, data);
 		repeat(2) @(posedge pclk);
-		apbBus.readData(addr, rData);
+		readData(pclk, addr, rData);
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 1  passed");
     	assert(data != rData) $display("\nWrite then read test 1 failed");		
 		data = 'h14;
-		apbBus.writeData(addr + 4, data);
+		writeData(pclk, addr + 4, data);
 		repeat(2) @(posedge pclk);
-		apbBus.readData(addr + 4, rData);
+		readData(pclk, addr + 4, rData);
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 2 passed");
     	assert(data != rData) $display("\nWrite then read test 2 failed");
 		data = 'h18;
-		apbBus.writeData(addr + 8, data);
+		writeData(pclk, addr + 8, data);
 		repeat(2) @(posedge pclk);
-		apbBus.readData(addr + 8, rData);
+		readData(pclk, addr + 8, rData);
 		repeat(2) @(posedge pclk);
 		assert(data == rData) $display("\nWrite then read test 3 passed");
     	assert(data != rData) $display("\nWrite then read test 3 failed");
