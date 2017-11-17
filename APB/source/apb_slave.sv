@@ -3,25 +3,19 @@
 import definesPkg::*;
 
 module apb_slave
-#(
-  addrWidth = 32,
-  dataWidth = 32
-)
 (
   input logic clk,
   input logic rst_n ,
-  apb_if.slave apb_slave
-  /*input                        clk,
-  input                        rst_n,
-  input        [addrWidth-1:0] paddr,//
-  input                        pwrite,//
-  input                        psel,//
-  input                        penable,//
-  input        [dataWidth-1:0] pwdata,//
-  output logic [dataWidth-1:0] prdata//*/
+  //apb_if.slave apb_slave
+  input        [APB_ADDR_WIDTH-1:0] PADDR,
+  input                        PWRITE,
+  input                        PSEL,
+  input                        PENABLE,
+  input        [APB_DATA_WIDTH-1:0] PWDATA,
+  output logic [APB_DATA_WIDTH-1:0] PRDATA
 );
 
-logic [dataWidth-1:0] mem [256];
+logic [APB_DATA_WIDTH-1:0] mem [256];
 
 typedef enum logic [1:0] {SETUP, W_ENABLE, R_ENABLE}
 state_type;
@@ -31,19 +25,19 @@ state_type  apb_st;
 always_ff @(posedge clk, negedge rst_n) begin
   if (~rst_n) begin
     apb_st <= SETUP;
-    apb_slave.PRDATA <= 0;
+    PRDATA <= 0;
     mem <= '{default: '0};
   end
 
   else begin
     case (apb_st)
       SETUP : begin
-        // clear the apb_slave.PRDATA
-        apb_slave.PRDATA <= 0;
+        // clear the PRDATA
+        PRDATA <= 0;
 
         // Move to ENABLE when the psel is asserted
-        if (apb_slave.PSEL && !apb_slave.PENABLE) begin
-          if (apb_slave.PWRITE) begin
+        if (PSEL && !PENABLE) begin
+          if (PWRITE) begin
             apb_st <= W_ENABLE;
           end
 
@@ -55,8 +49,8 @@ always_ff @(posedge clk, negedge rst_n) begin
 
       W_ENABLE : begin
         // write pwdata to memory
-        if (apb_slave.PSEL && apb_slave.PENABLE && apb_slave.PWRITE) begin
-          mem[apb_slave.PADDR] <= apb_slave.PWDATA;
+        if (PSEL && PENABLE && PWRITE) begin
+          mem[PADDR] <= PWDATA;
         end
 
         // return to SETUP
@@ -64,9 +58,9 @@ always_ff @(posedge clk, negedge rst_n) begin
       end
 
       R_ENABLE : begin
-        // read apb_slave.PRDATA from memory
-        if (apb_slave.PSEL && apb_slave.PENABLE && !apb_slave.PWRITE) begin
-          apb_slave.PRDATA <= mem[apb_slave.PADDR];
+        // read PRDATA from memory
+        if (PSEL && PENABLE && !PWRITE) begin
+          PRDATA <= mem[PADDR];
         end
 
         // return to SETUP
